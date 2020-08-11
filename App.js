@@ -13,6 +13,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  StatusBar,
 } from 'react-native';
 
 type Props = {};
@@ -21,16 +22,25 @@ export default class App extends Component<Props> {
   render() {
     return (
       <View style={styles.container}>
+        <StatusBar backgroundColor="rgb(12,39,49)" barStyle="light-content" />
         <Text style={styles.welcome}>LOG IN</Text>
         <TextInput style={styles.input} placeholder="Username" />
-        <TextInput style={styles.input} placeholder="Password" />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          secureTextEntry
+        />
 
         <View style={styles.btnContainer}>
-          <TouchableOpacity style={styles.userBtn}>
+          <TouchableOpacity
+            style={styles.userBtn}
+            onPress={() => alert('Login button pressed')}>
             <Text style={styles.btnText}>Login</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.userBtn}>
-            <Text style={styles.btnText}>Signup</Text>
+          <TouchableOpacity
+            style={styles.userBtn}
+            onPress={() => alert('Register button pressed')}>
+            <Text style={styles.btnText}>Register</Text>
           </TouchableOpacity>
         </View>
       </View>
