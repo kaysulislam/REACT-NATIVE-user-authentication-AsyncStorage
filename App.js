@@ -1,91 +1,84 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
-
 import React, {Component} from 'react';
 import {
-  StyleSheet,
   View,
+  StyleSheet,
   Text,
-  TextInput,
-  TouchableOpacity,
+  ActivityIndicator,
   StatusBar,
 } from 'react-native';
+//for the AsyncStorage
+import AsyncStorage from '@react-native-community/async-storage';
 
-type Props = {};
+//for the stack navigator
+import {createAppContainer, createSwitchNavigator} from 'react-navigation';
+import {createStackNavigator} from 'react-navigation-stack';
 
-export default class App extends Component<Props> {
+//Screens
+import LoginScreen from './component/screens/LoginScreen';
+import HomeScreen from './component/screens/HomeScreen';
+
+const RootStack = createStackNavigator(
+  {
+    //Home: {screen: LoginScreen, navigationOptions: {headerShown: false}},
+    Details: {screen: HomeScreen, navigationOptions: {headerShown: false}},
+  },
+  {
+    //initialRouteName: 'Home',
+    defaultNavigationOptions: {
+      headerStyle: {
+        backgroundColor: '#1e90ff',
+      },
+      headerTintColor: '#fff',
+      headerTitleStyle: {
+        textAlign: 'center',
+        flex: 1,
+      },
+    },
+  },
+);
+
+class AuthLoadingScreen extends Component {
+  constructor(props) {
+    super(props);
+    this._loadData();
+  }
+
   render() {
     return (
-      <View style={styles.container}>
-        <StatusBar backgroundColor="rgb(12,39,49)" barStyle="light-content" />
-        <Text style={styles.welcome}>LOG IN</Text>
-        <TextInput style={styles.input} placeholder="Username" />
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          secureTextEntry
-        />
-
-        <View style={styles.btnContainer}>
-          <TouchableOpacity
-            style={styles.userBtn}
-            onPress={() => alert('Login button pressed')}>
-            <Text style={styles.btnText}>Login</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.userBtn}
-            onPress={() => alert('Register button pressed')}>
-            <Text style={styles.btnText}>Register</Text>
-          </TouchableOpacity>
-        </View>
+      <View style={StyleSheet.container}>
+        <ActivityIndicator />
+        <StatusBar barStyle="default" />
       </View>
     );
   }
+
+  _loadData = async () => {
+    const isLoggedIn = await AsyncStorage.getItem('isLoggedIn');
+    this.props.navigation.navigate(isLoggedIn !== '1' ? 'Auth' : 'App');
+  };
 }
+
+const AuthStack = createStackNavigator({Home: LoginScreen});
+
+//doing the magic here
+////////
+export default createAppContainer(
+  createSwitchNavigator(
+    {
+      AuthLoading: AuthLoadingScreen,
+      App: RootStack,
+      Auth: AuthStack,
+    },
+    {
+      initialRouteName: 'AuthLoading',
+    },
+  ),
+);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgb(12,39,49)',
-  },
-  welcome: {
-    fontSize: 50,
-    textAlign: 'center',
-    margin: 10,
-    color: 'rgb(100,252,252)',
-    fontWeight: 'bold',
-  },
-  input: {
-    width: '90%',
-    backgroundColor: '#fff',
-    padding: 15,
-    marginBottom: 10,
-    borderRadius: 10,
-  },
-  btnContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '90%',
-  },
-  userBtn: {
-    backgroundColor: 'rgb(26,43,58)',
-    padding: 15,
-    width: '45%',
-    borderWidth: 1,
-    borderRadius: 10,
-    borderColor: 'rgb(100,252,252)',
-  },
-  btnText: {
-    fontSize: 18,
-    textAlign: 'center',
-    color: '#fff',
-    fontWeight: 'bold',
   },
 });
